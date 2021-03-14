@@ -6,7 +6,6 @@ import (
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/muesli/termenv"
 	"github.com/tjarratt/babble"
 )
 
@@ -97,9 +96,9 @@ func (m model) View() string {
 	var typed string
 	for i, c := range m.typed {
 		if byte(c) == m.text[i] {
-			typed += termenv.String(string(c)).String()
+			typed += string(c)
 		} else {
-			typed += termenv.String(string(c)).Background(termenv.ANSIBrightRed).String()
+			typed += red(string(c))
 		}
 	}
 
@@ -111,7 +110,15 @@ func (m model) View() string {
   `,
 		m.progress.View(m.percent),
 		typed,
-		termenv.String(remaining).Faint(),
+		faint(remaining),
 	)
 	return s
+}
+
+func faint(s string) string {
+	return "\033[2m" + s + "\033[m"
+}
+
+func red(s string) string {
+	return "\033[101m" + s + "\033[m"
 }
