@@ -138,11 +138,7 @@ func (m model) View() string {
 
   %s%s
 
-  `,
-		m.progress.View(m.percent),
-		typed,
-		faint(remaining),
-	)
+  `, m.progress.View(m.percent), typed, faint(remaining))
 
 	// Display words per minute when finished
 	if len(m.typed) >= len(m.text) {
