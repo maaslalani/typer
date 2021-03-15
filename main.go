@@ -17,6 +17,8 @@ const (
 	step  = 1.
 	width = 60.
 	words = 5
+
+	charsPerWord = 5.
 )
 
 func main() {
@@ -128,6 +130,7 @@ func (m model) View() string {
 	for i, c := range m.typed {
 		if byte(c) == m.text[i] {
 			typed += string(c)
+			m.score += 1
 			continue
 		}
 		typed += red(string(c))
@@ -143,7 +146,7 @@ func (m model) View() string {
 	// Display words per minute when finished
 	if len(m.typed) >= len(m.text) {
 		s += fmt.Sprintf(bold(`WPM: %.2f
-    `), words/m.end.Sub(m.start).Minutes(),
+    `), (float64(m.score)/charsPerWord)/(m.end.Sub(m.start).Minutes()),
 		)
 	}
 	return s
