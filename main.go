@@ -84,21 +84,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Deleting characters
 		if msg.Type == tea.KeyBackspace && len(m.typed) > 0 {
 			m.typed = m.typed[:len(m.typed)-1]
-			m.percent = float64(len(m.typed)) / float64(len(m.text))
-		}
-
-		if len(msg.Runes) <= 0 {
-			return m, nil
 		}
 
 		// Ensure we are adding characters only that we want the user to be able to type
 		// and that all the typed characters have a rune width of one.
-		ascii := int(msg.Runes[0])
-		if ascii < 32 || ascii > 126 {
-			return m, nil
+		if len(msg.Runes) > 0 && int(msg.Runes[0]) > 31 && int(msg.Runes[0]) < 127 {
+			m.typed += msg.String()
 		}
-
-		m.typed += msg.String()
 
 		// Update progress bar state
 		m.percent = float64(len(m.typed)) / float64(len(m.text))
@@ -147,9 +139,7 @@ func (m model) View() string {
 
 	// Display words per minute when finished
 	if len(m.typed) >= len(m.text) {
-		s += fmt.Sprintf(bold(`WPM: %.2f
-    `), (m.score/charsPerWord)/(m.end.Sub(m.start).Minutes()),
-		)
+		s += fmt.Sprintf(bold("WPM: %.2f\n"), (m.score/charsPerWord)/(m.end.Sub(m.start).Minutes()))
 	}
 	return s
 }
