@@ -18,6 +18,8 @@ const (
 	width = 60.
 	words = 5
 
+	// charsPerWord is the average characters per word used by most typing tests
+	// to calculate your WPM score.
 	charsPerWord = 5.
 )
 
@@ -59,8 +61,8 @@ type model struct {
 	end   time.Time
 	// mistakes is the number of characters that were mistyped by the user
 	mistakes int
-	// score is the number of characters that were correctly typed by the user
-	score int
+	// score is the user's score calculated by correct characters typed
+	score float64
 }
 
 // Init inits the bubbletea model for use
@@ -130,7 +132,7 @@ func (m model) View() string {
 	for i, c := range m.typed {
 		if byte(c) == m.text[i] {
 			typed += string(c)
-			m.score += 1
+			m.score += 1.0
 			continue
 		}
 		typed += red(string(c))
@@ -146,7 +148,7 @@ func (m model) View() string {
 	// Display words per minute when finished
 	if len(m.typed) >= len(m.text) {
 		s += fmt.Sprintf(bold(`WPM: %.2f
-    `), (float64(m.score)/charsPerWord)/(m.end.Sub(m.start).Minutes()),
+    `), (m.score/charsPerWord)/(m.end.Sub(m.start).Minutes()),
 		)
 	}
 	return s
