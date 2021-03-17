@@ -5,6 +5,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/maaslalani/typer/model"
 	"github.com/tjarratt/babble"
 )
 
@@ -27,10 +28,10 @@ func main() {
 
 	text := babbler.Babble()
 
-	program := tea.NewProgram(model{
-		progress: bar,
-		text:     text,
-		start:    time.Now(),
+	program := tea.NewProgram(model.Model{
+		Progress: bar,
+		Text:     text,
+		Start:    time.Now(),
 	})
 
 	err = program.Start()
