@@ -1,5 +1,8 @@
 make:
-	go run cmd/typer/main.go
+	go run cmd/typer/typer.go
 
 build:
-	go build -o typer cmd/typer/main.go
+	go build cmd/typer/typer.go
+
+install:
+	go install cmd/typer/typer.go
