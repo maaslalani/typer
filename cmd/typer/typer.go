@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
@@ -23,14 +25,16 @@ func main() {
 		panic(err)
 	}
 
-	// Randomly generate `words` words for the typing test
-	babbler := babble.NewBabbler()
-	babbler.Separator = " "
-	babbler.Count = words
+	var text string
+	if len(os.Args) > 1 {
+		text = readFile(os.Args[1])
+	} else {
+		text = randomWords(words)
+	}
 
 	program := tea.NewProgram(model.Model{
 		Progress: bar,
-		Text:     wrap.WrapString(babbler.Babble(), defaultWidth),
+		Text:     wrap.WrapString(text, defaultWidth),
 		Start:    time.Now(),
 	})
 
@@ -38,4 +42,22 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// readFile returns the file contents as a string
+func readFile(path string) string {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Fprintf(os.Stdin, "Could not open file %s", os.Args[1])
+		os.Exit(1)
+	}
+	return string(contents)
+}
+
+// randomWords generates a strings with the specified number of words
+func randomWords(n int) string {
+	babbler := babble.NewBabbler()
+	babbler.Separator = " "
+	babbler.Count = n
+	return babbler.Babble()
 }
