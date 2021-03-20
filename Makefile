@@ -1,2 +1,2 @@
 make:
-	go run main.go
+	go run cmd/typer/main.go

@@ -39,6 +39,15 @@ func (m Model) Init() tea.Cmd {
 	return nil
 }
 
+func (m Model) updateProgress() (tea.Model, tea.Cmd) {
+	m.Percent = float64(len(m.Typed)) / float64(len(m.Text))
+	if m.Percent >= 1.0 {
+		m.End = time.Now()
+		return m, tea.Quit
+	}
+	return m, nil
+}
+
 // Update updates the bubbletea model by handling the progress bar update
 // and adding typed characters to the state if they are valid typing characters
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -53,23 +62,36 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Deleting characters
 		if msg.Type == tea.KeyBackspace && len(m.Typed) > 0 {
 			m.Typed = m.Typed[:len(m.Typed)-1]
+			return m.updateProgress()
 		}
 
 		// Ensure we are adding characters only that we want the user to be able to type
-		// and that all the typed characters have a rune width of one.
-		if len(msg.Runes) > 0 && int(msg.Runes[0]) > 31 && int(msg.Runes[0]) < 127 {
-			m.Typed += msg.String()
+		if msg.Type != tea.KeyRunes {
+			return m, nil
 		}
 
-		// Update progress bar state
-		m.Percent = float64(len(m.Typed)) / float64(len(m.Text))
-		if m.Percent >= 1.0 {
-			m.End = time.Now()
-			return m, tea.Quit
+		char := msg.Runes[0]
+		next := rune(m.Text[len(m.Typed)])
+
+		// To properly account for line wrapping we need to always insert a new line
+		// Where the next line starts to not break the user interface, even if the user types a random character
+		if next == '\n' {
+			m.Typed += "\n"
+
+			// Since we need to perform a line break
+			// if the user types a space we should simply ignore it.
+			if char == ' ' {
+				return m, nil
+			}
 		}
 
-		return m, nil
+		m.Typed += msg.String()
 
+		if char == next {
+			m.Score += 1.
+		}
+
+		return m.updateProgress()
 	case tea.WindowSizeMsg:
 		m.Progress.Width = msg.Width - 4
 		if m.Progress.Width > width {
@@ -91,20 +113,18 @@ func (m Model) View() string {
 
 	var typed string
 	for i, c := range m.Typed {
-		s := string(c)
-		if byte(c) == m.Text[i] {
-			typed += s
-			m.Score += 1.0
-			continue
+		if c == rune(m.Text[i]) {
+			typed += string(c)
+		} else {
+			typed += termenv.String(string(m.Typed[i])).Background(termenv.ANSIBrightRed).String()
 		}
-		typed += termenv.String(s).Background(termenv.ANSIBrightRed).String()
 	}
 
 	s := fmt.Sprintf("\n  %s\n\n%s%s", m.Progress.View(m.Percent), typed, termenv.String(remaining).Faint())
 
 	// Display words per minute when finished
 	if len(m.Typed) >= len(m.Text) {
-		s += termenv.String(fmt.Sprintf("\n\nWPM: %.2f\n", (m.Score/charsPerWord)/(m.End.Sub(m.Start).Minutes()))).Bold().String()
+		s += fmt.Sprintf("\n\nWPM: %.2f\n", (m.Score/charsPerWord)/(m.End.Sub(m.Start).Minutes()))
 	}
 	return s
 }
