@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
@@ -26,7 +27,9 @@ func main() {
 	}
 
 	var text string
-	if len(os.Args) > 1 {
+	if len(os.Args) > 2 {
+		text = strings.Join(os.Args[1:], " ")
+	} else if len(os.Args) == 2 {
 		text = readFile(os.Args[1])
 	} else {
 		text = randomWords(words)
