@@ -2,6 +2,8 @@
 
 Typing test in your terminal
 
+![Typer Banner](../assets/banner.png)
+
 ### Installation
 ```
 go get github.com/maaslalani/typer
