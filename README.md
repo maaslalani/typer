@@ -18,6 +18,11 @@ If you want to provide your own text, you can pass in a file name. The typing te
 typer filename.txt
 ```
 
+You can also use any arbitrary command, for example `curl`ing text from the internet to practice on.
+```
+typer $(curl -s https://loripsum.net/api)
+```
+
 ### Demo
 ![typer](../assets/typer.gif?raw=true)
 
