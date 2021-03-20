@@ -48,7 +48,7 @@ func main() {
 func readFile(path string) string {
 	contents, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Fprintf(os.Stdin, "Could not open file %s", os.Args[1])
+		fmt.Fprintf(os.Stdin, "Could not open file %s\n", os.Args[1])
 		os.Exit(1)
 	}
 	return string(contents)
