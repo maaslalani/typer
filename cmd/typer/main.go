@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/maaslalani/typer/model"
-	"github.com/maaslalani/typer/pkg/wrap"
+	wrap "github.com/mitchellh/go-wordwrap"
 	"github.com/tjarratt/babble"
 )
 
@@ -30,7 +30,7 @@ func main() {
 
 	program := tea.NewProgram(model.Model{
 		Progress: bar,
-		Text:     wrap.Words(babbler.Babble(), defaultWidth),
+		Text:     wrap.WrapString(babbler.Babble(), defaultWidth),
 		Start:    time.Now(),
 	})
 
