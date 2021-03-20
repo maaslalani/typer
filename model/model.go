@@ -27,7 +27,6 @@ type Model struct {
 	Typed string
 	// Start and end are the start and end time of the typing test
 	Start time.Time
-	End   time.Time
 	// Mistakes is the number of characters that were mistyped by the user
 	Mistakes int
 	// Score is the user's score calculated by correct characters typed
@@ -42,7 +41,6 @@ func (m Model) Init() tea.Cmd {
 func (m Model) updateProgress() (tea.Model, tea.Cmd) {
 	m.Percent = float64(len(m.Typed)) / float64(len(m.Text))
 	if m.Percent >= 1.0 {
-		m.End = time.Now()
 		return m, tea.Quit
 	}
 	return m, nil
@@ -55,7 +53,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		// User wants to cancel the typing test
 		if msg.Type == tea.KeyCtrlC {
-			m.End = time.Now()
 			return m, tea.Quit
 		}
 
@@ -121,10 +118,6 @@ func (m Model) View() string {
 	}
 
 	s := fmt.Sprintf("\n  %s\n\n%s%s", m.Progress.View(m.Percent), typed, termenv.String(remaining).Faint())
-
-	// Display words per minute when finished
-	if len(m.Typed) >= len(m.Text) {
-		s += fmt.Sprintf("\n\nWPM: %.2f\n", (m.Score/charsPerWord)/(m.End.Sub(m.Start).Minutes()))
-	}
+	s += fmt.Sprintf("\n\nWPM: %.2f\n", (m.Score/charsPerWord)/(time.Since(m.Start).Minutes()))
 	return s
 }
