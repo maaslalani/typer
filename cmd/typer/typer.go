@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"strings"
@@ -23,8 +25,10 @@ const (
 
 func main() {
 	initializeFlags()
-	printFlags()
-	text := executeFlags()
+	text, err := executeFlags()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	bar, err := progress.NewModel(progress.WithScaledGradient(blue, purple))
 	if err != nil {
@@ -62,16 +66,24 @@ func randomWords(n int) string {
 }
 
 // shuffleWords randomizes word order across the string given
-func shuffleWords(s string) string {
+func shuffleWords(s string) (string, error) {
+	if len(s) == 0 {
+		return "", errors.New("shuffle: empty input")
+	}
+
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	shuffled := strings.Split(s, separatorFlag)
+	shuffled := strings.Fields(s)
 	n := len(shuffled)
+
+	if n == 1 {
+		return s, errors.New("shuffle: too short to shuffle")
+	}
 
 	for i := range shuffled {
 		pos := rand.Intn(n - 1)
 		shuffled[i], shuffled[pos] = shuffled[pos], shuffled[i]
 	}
 
-	return strings.Join(shuffled, " ")
+	return strings.Join(shuffled, " "), nil
 }
