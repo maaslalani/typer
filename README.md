@@ -6,7 +6,7 @@ Typing test in your terminal
 
 ### Installation
 ```
-go get github.com/maaslalani/typer
+go get github.com/maaslalani/typer/cmd/typer
 ```
 
 ### Usage
