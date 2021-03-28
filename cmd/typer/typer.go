@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -21,18 +22,13 @@ const (
 )
 
 func main() {
+	initializeFlags()
+	printFlags()
+	text := executeFlags()
+
 	bar, err := progress.NewModel(progress.WithScaledGradient(blue, purple))
 	if err != nil {
 		panic(err)
-	}
-
-	var text string
-	if len(os.Args) > 2 {
-		text = strings.Join(os.Args[1:], " ")
-	} else if len(os.Args) == 2 {
-		text = readFile(os.Args[1])
-	} else {
-		text = randomWords(words)
 	}
 
 	program := tea.NewProgram(model.Model{
@@ -51,7 +47,7 @@ func main() {
 func readFile(path string) string {
 	contents, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Fprintf(os.Stdin, "Could not open file %s\n", os.Args[1])
+		fmt.Fprintf(os.Stdin, "Could not open file %s\n", path)
 		os.Exit(1)
 	}
 	return string(contents)
@@ -63,4 +59,19 @@ func randomWords(n int) string {
 	babbler.Separator = " "
 	babbler.Count = n
 	return babbler.Babble()
+}
+
+// shuffleWords randomizes word order across the string given
+func shuffleWords(s string) string {
+	rand.Seed(time.Now().UTC().UnixNano())
+
+	shuffled := strings.Split(s, separatorFlag)
+	n := len(shuffled)
+
+	for i := range shuffled {
+		pos := rand.Intn(n - 1)
+		shuffled[i], shuffled[pos] = shuffled[pos], shuffled[i]
+	}
+
+	return strings.Join(shuffled, " ")
 }
