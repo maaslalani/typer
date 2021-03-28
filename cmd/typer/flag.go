@@ -1,8 +1,8 @@
 package main
 
 import (
+	"errors"
 	"flag"
-	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -24,7 +24,6 @@ var (
 	randFlag        bool
 	shuffleFlag     stringSlice
 	lengthFlag      int
-	separatorFlag   string
 	punctuationFlag bool
 )
 
@@ -33,7 +32,6 @@ const (
 	randUsage        = "shuffles all words received from text file(s) after merging"
 	shuffleUsage     = "shuffles word in each file received before merging"
 	lengthUsage      = "set length of the text after merging"
-	separatorUsage   = "set separator used to separate words in files provided"
 	punctuationUsage = "setting flag to true removes punctuation marks from final text"
 )
 
@@ -48,9 +46,6 @@ func initializeFlags() {
 	flag.IntVar(&lengthFlag, "length", 0, lengthUsage)
 	flag.IntVar(&lengthFlag, "l", 0, lengthUsage+" (shorthand)")
 
-	flag.StringVar(&separatorFlag, "separator", " ", separatorUsage)
-	flag.StringVar(&separatorFlag, "sep", " ", separatorUsage+" (shorthand)")
-
 	flag.BoolVar(&punctuationFlag, "punctuation", false, punctuationUsage)
 	flag.BoolVar(&punctuationFlag, "pun", false, punctuationUsage+" (shorthand)")
 
@@ -59,28 +54,41 @@ func initializeFlags() {
 
 // executeFlags is used to process command line arguments
 // it returns a text string that contains processed text ready to be used in the program
-func executeFlags() string {
+func executeFlags() (string, error) {
 	var text string
 
 	if len(shuffleFlag) > 0 {
 		for _, path := range shuffleFlag {
-			text += shuffleWords(readFile(path))
+			tmp, err := shuffleWords(readFile(path))
+			if err != nil {
+				log.Println(err)
+			}
+			text += tmp
 		}
 	}
 	if len(flag.Args()) > 0 {
 		for _, path := range flag.Args() {
 			text += readFile(path)
 		}
-	} else {
+	} else if len(shuffleFlag) == 0 {
 		text += randomWords(words)
 	}
+	if len(text) == 0 {
+		return "", errors.New("no input given")
+	}
 	if randFlag {
-		text = shuffleWords(text)
+		tmp, err := shuffleWords(text)
+		if err != nil {
+			log.Print(err)
+		}
+		text = tmp
 	}
 	if lengthFlag > 0 {
-		arr := strings.Split(text, separatorFlag)
-		arr = arr[:lengthFlag]
-		text = strings.Join(arr, separatorFlag)
+		arr := strings.Fields(text)
+		if lengthFlag < len(arr) {
+			arr = arr[:lengthFlag]
+		}
+		text = strings.Join(arr, " ")
 	}
 	if punctuationFlag {
 		reg, err := regexp.Compile("[^a-zA-Z0-9 ]+")
@@ -90,15 +98,5 @@ func executeFlags() string {
 		text = reg.ReplaceAllString(text, "")
 	}
 
-	return text
-}
-
-// printFlags prints out current flag values
-func printFlags() {
-	fmt.Println("rnd:", randFlag)
-	fmt.Println("shf:", shuffleFlag)
-	fmt.Println("len:", lengthFlag)
-	fmt.Println("sep:", separatorFlag)
-	fmt.Println("pun:", punctuationFlag)
-	fmt.Println("tail:", flag.Args())
+	return text, nil
 }
