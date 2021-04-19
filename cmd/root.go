@@ -46,8 +46,6 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("root called")
-
 		cstatus, err := cmd.Flags().GetBool("capital")
 		if err != nil {
 			log.Println("cstatus:", err)
@@ -87,7 +85,6 @@ func Execute() {
 }
 
 func init() {
-	fmt.Println("init")
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
