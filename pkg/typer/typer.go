@@ -1,6 +1,7 @@
 package typer
 
 import (
+	"log"
 	"strings"
 	"time"
 	"typer/pkg/model"
@@ -71,7 +72,7 @@ func run(text string) error {
 }
 
 // formatText applies formatting based on flags
-func (f Flags) formatText(s string) (string, error) {
+func (f *Flags) formatText(s string) (string, error) {
 	var err error
 	s, err = u.AdjustWhitespace(s)
 	if err != nil {
@@ -85,6 +86,10 @@ func (f Flags) formatText(s string) (string, error) {
 		}
 	}
 
+	if f.Length <= 0 {
+		log.Println("Length value is incorrect. Restoring to default value.")
+		f.Length = u.MaxInt
+	}
 	s = u.AdjustLength(s, f.Length)
 
 	if !f.Capital {
