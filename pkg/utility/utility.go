@@ -53,7 +53,7 @@ func AdjustWhitespace(s string) (string, error) {
 	return s, nil
 }
 
-// RemoveNonAlpha removes all non-alphanumeric characters exept spaces
+// RemoveNonAlpha removes all non-alphanumeric characters exept whitespace
 func RemoveNonAlpha(s string) (string, error) {
 	reg, err := regexp.Compile(`[^a-zA-Z0-9\s]+`)
 	if err != nil {
