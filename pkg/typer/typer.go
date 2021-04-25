@@ -4,7 +4,6 @@ import (
 	"log"
 	"strings"
 	"time"
-
 	"typer/pkg/model"
 	u "typer/pkg/utility"
 
@@ -14,10 +13,12 @@ import (
 )
 
 const (
-	blue         = "#4776E6"
-	purple       = "#8E54E9"
-	words        = 15
-	defaultWidth = 60
+	blue          = "#4776E6"
+	purple        = "#8E54E9"
+	words         = 15
+	defaultWidth  = 60
+	DefaultLength = int(^uint(0) >> 1)
+	maxLength     = int(^uint(0) >> 1)
 )
 
 type Flags struct {
@@ -87,9 +88,9 @@ func (f *Flags) formatText(s string) (string, error) {
 		}
 	}
 
-	if f.Length <= 0 {
+	if f.Length <= 0 || f.Length > maxLength {
 		log.Println("Length value is incorrect. Restoring to default value.")
-		f.Length = u.MaxInt
+		f.Length = DefaultLength
 	}
 	s = u.AdjustLength(s, f.Length)
 
