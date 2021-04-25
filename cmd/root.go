@@ -21,7 +21,6 @@ import (
 	"os"
 
 	"typer/pkg/typer"
-	u "typer/pkg/utility"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -93,7 +92,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.typer.yaml)")
-	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", u.MaxInt, "set max text length")
+	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", typer.DefaultLength, "set max text length")
 	rootCmd.PersistentFlags().BoolP("capital", "c", false, "true to include capital letters")
 	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "true to include punctuation")
 	rootCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "path to input file")
@@ -113,8 +112,11 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
+		log.Println(home)
+
 		// Search config in home directory with name ".typer" (without extension).
 		viper.AddConfigPath(home)
+		viper.AddConfigPath("~/.config")
 		viper.SetConfigName(".typer")
 	}
 

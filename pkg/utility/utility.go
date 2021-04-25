@@ -8,11 +8,6 @@ import (
 	"github.com/tjarratt/babble"
 )
 
-const (
-	MaxUint = ^uint(0)
-	MaxInt  = int(MaxUint >> 1)
-)
-
 // ReadFile returns the file contents as a string
 func ReadFile(path string) (string, error) {
 	contents, err := os.ReadFile(path)

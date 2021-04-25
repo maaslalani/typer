@@ -12,4 +12,5 @@ require (
 	github.com/spf13/cobra v1.1.3 // indirect
 	github.com/spf13/viper v1.7.1 // indirect
 	github.com/tjarratt/babble v0.0.0-20191209142150-eecdf8c2339d // indirect
+	github.com/zhexuany/wordGenerator v0.0.0-20161102120352-1f13e790d534 // indirect
 )
