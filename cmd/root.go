@@ -116,7 +116,6 @@ func initConfig() {
 
 		// Search config in home directory with name ".typer" (without extension).
 		viper.AddConfigPath(home)
-		viper.AddConfigPath("~/.config")
 		viper.SetConfigName(".typer")
 	}
 
