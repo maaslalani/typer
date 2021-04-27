@@ -100,6 +100,11 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	if length > typer.MaxLength {
+		log.Println("Max length value exceeded. Restoring to max length value.")
+		length = typer.MaxLength
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -111,8 +116,6 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
-
-		log.Println(home)
 
 		// Search config in home directory with name ".typer" (without extension).
 		viper.AddConfigPath(home)

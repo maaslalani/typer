@@ -17,8 +17,8 @@ const (
 	purple        = "#8E54E9"
 	words         = 15
 	defaultWidth  = 60
-	DefaultLength = int(^uint(0) >> 1)
-	maxLength     = int(^uint(0) >> 1)
+	DefaultLength = 20
+	MaxLength     = 500
 )
 
 type Flags struct {
@@ -88,9 +88,12 @@ func (f *Flags) formatText(s string) (string, error) {
 		}
 	}
 
-	if f.Length <= 0 || f.Length > maxLength {
+	if f.Length <= 0 {
 		log.Println("Length value is incorrect. Restoring to default value.")
 		f.Length = DefaultLength
+	} else if f.Length > MaxLength {
+		log.Println("Max length value exceeded. Restoring to max length value.")
+		f.Length = MaxLength
 	}
 	s = u.AdjustLength(s, f.Length)
 
