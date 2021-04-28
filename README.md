@@ -15,14 +15,14 @@ To begin a typing test simply type `typer`. This will generate random words for 
 typer
 ```
 
-If you want to provide your own text, you can pass in a file name. The typing test will use the contents of the specified file.
+To change the length of the typing test, use the `--length` flag.
 ```
-typer filename.txt
+typer -l 20
 ```
 
-You can also use any arbitrary command, for example `curl`ing text from the internet to practice on.
+If you want to provide your own text, you can pass in a file name with the `--file` flag. The typing test will use the contents of the specified file.
 ```
-typer $(curl -s https://loripsum.net/api)
+typer -f filename.txt
 ```
 
 ### Demo
