@@ -1,18 +1,3 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
@@ -33,53 +18,43 @@ var (
 	filePath string
 )
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "typer",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {
-		cstatus, err := cmd.Flags().GetBool("capital")
+	Short: "Terminal typing test",
+	Long:  `Measure your typing speed without ever leaving your terminal.`,
+	Run: func(cmd *cobra.Command, _ []string) {
+		c, err := cmd.Flags().GetBool("capital")
 		if err != nil {
-			log.Println("cstatus:", err)
+			fmt.Println("Error: Something went wrong with the capital flag.", err)
 		}
 
-		pstatus, err := cmd.Flags().GetBool("punctuation")
+		p, err := cmd.Flags().GetBool("punctuation")
 		if err != nil {
-			log.Println("pstatus:", err)
+			fmt.Println("Error: Something went wrong with the punctuation flag.", err)
 		}
 
 		flagStruct := typer.Flags{
 			Length:      length,
-			Capital:     cstatus,
-			Punctuation: pstatus,
+			Capital:     c,
+			Punctuation: p,
 		}
 
 		if filePath != "" {
 			err := typer.FromFile(filePath, &flagStruct)
 			if err != nil {
-				log.Println("ReadFile:", err)
+				log.Println("Error: Could not read file.", err)
 				os.Exit(1)
 			}
 		} else {
 			err := typer.Random(length, &flagStruct)
 			if err != nil {
-				log.Println("Random:", err)
+				log.Println("Error: Unable to use random words.", err)
 				os.Exit(1)
 			}
 		}
 	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
@@ -87,45 +62,37 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.typer.yaml)")
 	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", typer.DefaultLength, "set max text length")
 	rootCmd.PersistentFlags().BoolP("capital", "c", false, "true to include capital letters")
 	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "true to include punctuation")
 	rootCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "path to input file")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 	if length > typer.MaxLength {
-		log.Println("Max length value exceeded. Restoring to max length value.")
+		log.Println("Error: Max length value exceeded. Restoring to max length value.")
+		length = typer.MaxLength
+	}
+
+	if length < 0 {
+		log.Println("Error: Length cannot be negative. Using default length.")
 		length = typer.MaxLength
 	}
 }
 
-// initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
-		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".typer" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".typer")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	viper.AutomaticEnv()
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	err := viper.ReadInConfig()
+	if err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }
