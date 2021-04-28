@@ -1,6 +1,6 @@
 package main
 
-import "typer/cmd"
+import "github.com/maaslalani/typer/cmd"
 
 func main() {
 	cmd.Execute()

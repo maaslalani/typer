@@ -1,4 +1,4 @@
-module typer
+module github.com/maaslalani/typer
 
 go 1.16
 
