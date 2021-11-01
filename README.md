@@ -5,8 +5,10 @@ Typing test in your terminal
 ![Typer Banner](../assets/banner.png)
 
 ### Installation
+
+To just install `typer` simply use this command:
 ```
-go get github.com/maaslalani/typer
+go install github.com/maaslalani/typer@latest
 ```
 
 ### Usage
@@ -30,5 +32,17 @@ typer -f filename.txt
 
 ### Development
 ```
+// You can just run `typer` without installing it
+go run .
+
+// You can also build an executable
+go build -o typer .
+
+// You can also install the package, so you can run it as any other command
+go install
+
+// Instead of any of the commands above you can also use `make`
 make
+make build
+make install
 ```
