@@ -27,6 +27,11 @@ If you want to provide your own text, you can pass in a file name with the `--fi
 typer -f filename.txt
 ```
 
+You can also pipe data by `stdin`, which gives you endless possibilities to manage your input data.
+```
+echo 'I love typer!' | typer
+```
+
 ### Demo
 ![typer](../assets/typer.gif?raw=true)
 
