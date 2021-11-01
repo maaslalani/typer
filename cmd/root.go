@@ -71,11 +71,11 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.typer.yaml)")
-	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", typer.DefaultLength, "set max text length")
-	rootCmd.PersistentFlags().BoolP("capital", "c", false, "true to include capital letters")
-	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "true to include punctuation")
-	rootCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "path to input file")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Specify config file path. (default is $HOME/.typer.yaml)")
+	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", typer.DefaultLength, "Set max text length.")
+	rootCmd.PersistentFlags().BoolP("capital", "c", false, "Use to set all letters to lower case.")
+	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "Use to remove non-alphanumeric characters.")
+	rootCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "Specify path to input file.")
 
 	if length > typer.MaxLength {
 		log.Println("Error: Max length value exceeded. Restoring to max length value.")

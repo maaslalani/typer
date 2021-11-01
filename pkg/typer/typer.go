@@ -101,7 +101,7 @@ func (f *Flags) formatText(s string) (string, error) {
 		return "", err
 	}
 
-	if !f.Punctuation {
+	if f.Punctuation {
 		s, err = util.RemoveNonAlpha(s)
 		if err != nil {
 			return "", err
@@ -117,7 +117,7 @@ func (f *Flags) formatText(s string) (string, error) {
 	}
 	s = util.AdjustLength(s, f.Length)
 
-	if !f.Capital {
+	if f.Capital {
 		s = strings.ToLower(s)
 	}
 	return s, nil
