@@ -5,8 +5,10 @@ Typing test in your terminal
 ![Typer Banner](../assets/banner.png)
 
 ### Installation
+
+To just install `typer` simply use this command:
 ```
-go get github.com/maaslalani/typer
+go install github.com/maaslalani/typer@latest
 ```
 
 ### Usage
@@ -25,10 +27,10 @@ If you want to provide your own text, you can pass in a file name with the `--fi
 typer -f filename.txt
 ```
 
+You can also pipe data by `stdin`.
+```
+echo 'Text from stdin!' | typer
+```
+
 ### Demo
 ![typer](../assets/typer.gif?raw=true)
-
-### Development
-```
-make
-```

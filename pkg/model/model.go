@@ -51,6 +51,11 @@ func (m Model) updateProgress() (tea.Model, tea.Cmd) {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		// Start counting time only after the first keystroke
+		if m.Start.IsZero() {
+			m.Start = time.Now()
+		}
+
 		// User wants to cancel the typing test
 		if msg.Type == tea.KeyCtrlC {
 			return m, tea.Quit
@@ -118,6 +123,12 @@ func (m Model) View() string {
 	}
 
 	s := fmt.Sprintf("\n  %s\n\n%s%s", m.Progress.View(m.Percent), typed, termenv.String(remaining).Faint())
-	s += fmt.Sprintf("\n\nWPM: %.2f\n", (m.Score/charsPerWord)/(time.Since(m.Start).Minutes()))
+
+	var wpm float64
+	// Start counting wpm after at least two characters are typed
+	if len(m.Typed) > 1 {
+		wpm = (m.Score / charsPerWord) / (time.Since(m.Start).Minutes())
+	}
+	s += fmt.Sprintf("\n\nWPM: %.2f\n", wpm)
 	return s
 }
