@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
@@ -86,7 +85,7 @@ func run(text string) error {
 	program := tea.NewProgram(model.Model{
 		Progress: bar,
 		Text:     wrap.WrapString(text, defaultWidth),
-		Start:    time.Now(),
+		// Start:    time.Now(),
 	})
 
 	err = program.Start()
