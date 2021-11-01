@@ -39,9 +39,11 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m Model) updateProgress() (tea.Model, tea.Cmd) {
-	m.Percent = float64(len(m.Typed)) / float64(len(m.Text))
-	if m.Percent >= 1.0 {
-		return m, tea.Quit
+	if m.AllTypedValid() {
+		m.Percent = float64(len(m.Typed)) / float64(len(m.Text))
+		if m.Percent >= 1.0 {
+			return m, tea.Quit
+		}
 	}
 	return m, nil
 }
@@ -73,24 +75,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		char := msg.Runes[0]
-		next := rune(m.Text[len(m.Typed)])
+		if len(m.Typed) < len(m.Text) {
+			next := rune(m.Text[len(m.Typed)])
 
-		// To properly account for line wrapping we need to always insert a new line
-		// Where the next line starts to not break the user interface, even if the user types a random character
-		if next == '\n' {
-			m.Typed += "\n"
+			// To properly account for line wrapping we need to always insert a new line
+			// Where the next line starts to not break the user interface, even if the user types a random character
+			if next == '\n' {
+				m.Typed += "\n"
 
-			// Since we need to perform a line break
-			// if the user types a space we should simply ignore it.
-			if char == ' ' {
-				return m, nil
+				// Since we need to perform a line break
+				// if the user types a space we should simply ignore it.
+				if char == ' ' {
+					return m, nil
+				}
 			}
-		}
 
-		m.Typed += msg.String()
+			m.Typed += msg.String()
 
-		if char == next {
-			m.Score += 1.
+			if char == next {
+				m.Score += 1.
+			}
 		}
 
 		return m.updateProgress()
@@ -137,4 +141,8 @@ func (m Model) View() string {
 func (m Model) GetWPM() float64 {
 	wpm := (m.Score / charsPerWord) / (time.Since(m.Start).Minutes())
 	return wpm
+}
+
+func (m Model) AllTypedValid() bool {
+	return m.Typed == m.Text[:len(m.Typed)]
 }
