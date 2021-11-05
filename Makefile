@@ -5,4 +5,4 @@ build:
 	go build main.go -o typer
 
 install:
-	go install main.go -o typer
+	go install

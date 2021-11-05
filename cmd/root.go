@@ -38,14 +38,24 @@ var rootCmd = &cobra.Command{
 			Punctuation: p,
 		}
 
-		if filePath != "" {
+		stat, err := os.Stdin.Stat()
+		if err != nil {
+			log.Fatal(err)
+		}
+		if (stat.Mode() & os.ModeCharDevice) == 0 {
+			err := typer.FromStdin(length, &flagStruct)
+			if err != nil {
+				log.Println("Error: Could not read stdin.", err)
+				os.Exit(1)
+			}
+		} else if filePath != "" {
 			err := typer.FromFile(filePath, &flagStruct)
 			if err != nil {
 				log.Println("Error: Could not read file.", err)
 				os.Exit(1)
 			}
 		} else {
-			err := typer.Random(length, &flagStruct)
+			err := typer.FromRandom(length, &flagStruct)
 			if err != nil {
 				log.Println("Error: Unable to use random words.", err)
 				os.Exit(1)
