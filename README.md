@@ -6,10 +6,16 @@ Typing test in your terminal
 
 ### Installation
 
-To just install `typer` simply use this command:
+If you have `go` installed, just install `typer` simply use this command:
 ```
 go install github.com/maaslalani/typer@latest
 ```
+
+Otherwise you can use `curl` to install it 
+```
+curl -sf https://goblin.reaper.im/github.com/maaslalani/typer@latest | sh
+```
+
 
 ### Usage
 To begin a typing test simply type `typer`. This will generate random words for you to type and show you your WPM score.
