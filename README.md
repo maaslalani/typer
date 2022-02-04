@@ -13,7 +13,7 @@ go install github.com/maaslalani/typer@latest
 
 Otherwise you can use `curl` to install it 
 ```
-curl -sf https://goblin.reaper.im/github.com/maaslalani/typer@latest | sh
+curl -sf https://goblin.reaper.im/github.com/maaslalani/typer | sh
 ```
 
 
