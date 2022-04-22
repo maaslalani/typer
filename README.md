@@ -33,4 +33,4 @@ echo 'Text from stdin!' | typer
 ```
 
 ### Demo
-![typer](../assets/typer.gif?raw=true)
+![typer](../assets/typer.png?raw=true)
