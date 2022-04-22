@@ -15,7 +15,6 @@ import (
 
 const (
 	blue          = "#4776E6"
-	purple        = "#8E54E9"
 	words         = 15
 	defaultWidth  = 60
 	DefaultLength = 20
@@ -78,7 +77,7 @@ func FromFile(path string, flagStruct *Flags) error {
 
 // run is responsible for running the GUI
 func run(text string) error {
-	bar, err := progress.NewModel(progress.WithScaledGradient(blue, purple))
+	bar, err := progress.NewModel(progress.WithSolidFill(blue))
 	if err != nil {
 		return err
 	}

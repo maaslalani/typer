@@ -1,11 +1,13 @@
 package utility
 
 import (
+	"math/rand"
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
-	"github.com/tjarratt/babble"
+	"github.com/tyler-smith/go-bip39/wordlists"
 )
 
 // ReadFile returns the file contents as a string
@@ -14,12 +16,18 @@ func ReadFile(path string) (string, error) {
 	return string(contents), err
 }
 
-// RandomWords generates a strings with the specified number of random words using Babble
+// RandomWords generates a strings with the specified number of random words using wordlist
 func RandomWords(n int) string {
-	babbler := babble.NewBabbler()
-	babbler.Separator = " "
-	babbler.Count = n
-	return babbler.Babble()
+	seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(seed)
+	words := wordlists.English
+	l := len(words)
+
+	var s string
+	for i := 0; i < n; i++ {
+		s += words[r.Intn(l)] + " "
+	}
+	return s
 }
 
 // AdjustLength shortens a string if it's word count is greater than n

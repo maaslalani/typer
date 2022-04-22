@@ -122,7 +122,7 @@ func (m Model) View() string {
 		}
 	}
 
-	s := fmt.Sprintf("\n  %s\n\n%s%s", m.Progress.View(m.Percent), typed, termenv.String(remaining).Faint())
+	s := fmt.Sprintf("\n  %s\n\n%s%s", m.Progress.View(m.Percent), typed, termenv.String(remaining).Foreground(termenv.RGBColor("#555")).Faint())
 
 	var wpm float64
 	// Start counting wpm after at least two characters are typed
