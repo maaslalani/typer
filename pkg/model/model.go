@@ -6,7 +6,8 @@ import (
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/muesli/termenv"
+	"github.com/guptarohit/asciigraph"
+	"github.com/maaslalani/typer/pkg/theme"
 )
 
 const (
@@ -15,6 +16,10 @@ const (
 	// charsPerWord is the average characters per word used by most typing tests
 	// to calculate your WPM score.
 	charsPerWord = 5.
+)
+
+var (
+	wpms []float64
 )
 
 type Model struct {
@@ -31,6 +36,8 @@ type Model struct {
 	Mistakes int
 	// Score is the user's score calculated by correct characters typed
 	Score float64
+	// Theme is the current color theme
+	Theme *theme.Theme
 }
 
 // Init inits the bubbletea model for use
@@ -116,19 +123,42 @@ func (m Model) View() string {
 	var typed string
 	for i, c := range m.Typed {
 		if c == rune(m.Text[i]) {
-			typed += string(c)
+			typed += m.Theme.StringColor(m.Theme.Text.Typed, string(c)).String()
 		} else {
-			typed += termenv.String(string(m.Typed[i])).Background(termenv.ANSIBrightRed).String()
+			typed += m.Theme.StringColor(m.Theme.Text.Error, string(m.Typed[i])).String()
 		}
 	}
 
-	s := fmt.Sprintf("\n  %s\n\n%s%s", m.Progress.View(m.Percent), typed, termenv.String(remaining).Foreground(termenv.RGBColor("#555")).Faint())
+	s := fmt.Sprintf(
+		"\n  %s\n\n%s%s",
+		m.Progress.View(m.Percent),
+		typed,
+		m.Theme.StringColor(m.Theme.Text.Untyped, remaining).Faint(),
+	)
 
 	var wpm float64
 	// Start counting wpm after at least two characters are typed
 	if len(m.Typed) > 1 {
 		wpm = (m.Score / charsPerWord) / (time.Since(m.Start).Minutes())
 	}
-	s += fmt.Sprintf("\n\nWPM: %.2f\n", wpm)
+
+	var wpmsCount []float64
+	if len(m.Typed) > charsPerWord {
+		wpms = append(wpms, wpm)
+	}
+
+	wpmsCount = wpms
+	if len(wpmsCount) <= 0 {
+		wpmsCount = []float64{0}
+	}
+
+	graph := asciigraph.Plot(
+		wpmsCount,
+		asciigraph.Height(m.Theme.Graph.Height),
+		asciigraph.Width(m.Progress.Width-5),
+		asciigraph.Precision(2),
+		asciigraph.SeriesColors(m.Theme.GraphColor()),
+	)
+	s += fmt.Sprintf("\n\n%s\n\nWPM: %.2f\n", graph, wpm)
 	return s
 }

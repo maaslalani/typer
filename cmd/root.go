@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/maaslalani/typer/pkg/flags"
 	"github.com/maaslalani/typer/pkg/typer"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -12,9 +13,10 @@ import (
 )
 
 var (
-	cfgFile  string
-	length   int
-	filePath string
+	cfgFile            string
+	length             int
+	filePath           string
+	monkeytypeLanguage string
 )
 
 var rootCmd = &cobra.Command{
@@ -32,7 +34,12 @@ var rootCmd = &cobra.Command{
 			fmt.Println("Error: Something went wrong with the punctuation flag.", err)
 		}
 
-		flagStruct := typer.Flags{
+		m, err := cmd.Flags().GetBool("monkeytype")
+		if err != nil {
+			fmt.Println("Error: Something went wrong with monkeytype flag", err)
+		}
+
+		flagStruct := flags.Flags{
 			Length:      length,
 			Capital:     c,
 			Punctuation: p,
@@ -42,24 +49,24 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		if (stat.Mode() & os.ModeCharDevice) == 0 {
-			err := typer.FromStdin(length, &flagStruct)
-			if err != nil {
-				log.Println("Error: Could not read stdin.", err)
-				os.Exit(1)
-			}
-		} else if filePath != "" {
-			err := typer.FromFile(filePath, &flagStruct)
-			if err != nil {
-				log.Println("Error: Could not read file.", err)
-				os.Exit(1)
-			}
-		} else {
-			err := typer.FromRandom(length, &flagStruct)
-			if err != nil {
-				log.Println("Error: Unable to use random words.", err)
-				os.Exit(1)
-			}
+
+		switch true {
+		case (stat.Mode() & os.ModeCharDevice) == 0:
+			err = typer.FromStdin(length, &flagStruct)
+			break
+		case m:
+			err = typer.FromMonkeytype(monkeytypeLanguage, &flagStruct)
+			break
+		case filePath != "":
+			err = typer.FromFile(filePath, &flagStruct)
+			break
+		default:
+			err = typer.FromRandom(length, &flagStruct)
+		}
+
+		if err != nil {
+			log.Println("Error: Could not read words from source:", err)
+			os.Exit(1)
 		}
 	},
 }
@@ -72,19 +79,21 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.typer.yaml)")
-	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", typer.DefaultLength, "set max text length")
+	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", flags.DefaultLength, "set max text length")
 	rootCmd.PersistentFlags().BoolP("capital", "c", false, "true to include capital letters")
 	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "true to include punctuation")
+	rootCmd.PersistentFlags().BoolP("monkeytype", "m", false, "true to use monkeytype as a source")
+	rootCmd.PersistentFlags().StringVar(&monkeytypeLanguage, "monkeytype-language", "english", "monkeytype language")
 	rootCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "path to input file")
 
-	if length > typer.MaxLength {
+	if length > flags.MaxLength {
 		log.Println("Error: Max length value exceeded. Restoring to max length value.")
-		length = typer.MaxLength
+		length = flags.MaxLength
 	}
 
 	if length < 0 {
 		log.Println("Error: Length cannot be negative. Using default length.")
-		length = typer.MaxLength
+		length = flags.MaxLength
 	}
 }
 
