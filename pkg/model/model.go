@@ -142,12 +142,11 @@ func (m Model) View() string {
 		wpm = (m.Score / charsPerWord) / (time.Since(m.Start).Minutes())
 	}
 
-	var wpmsCount []float64
 	if len(m.Typed) > charsPerWord {
 		wpms = append(wpms, wpm)
 	}
 
-	wpmsCount = wpms
+	wpmsCount := wpms
 	if len(wpmsCount) <= 0 {
 		wpmsCount = []float64{0}
 	}

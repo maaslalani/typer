@@ -19,6 +19,7 @@ import (
 	"github.com/maaslalani/typer/pkg/theme"
 	util "github.com/maaslalani/typer/pkg/utility"
 	wrap "github.com/mitchellh/go-wordwrap"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -119,7 +120,11 @@ func FromMonkeytype(language string, flagStruct *flags.Flags) error {
 
 // run is responsible for running the GUI
 func run(text string) error {
-	currentTheme := theme.LoadViper()
+	currentTheme, err := theme.LoadViper(viper.GetViper(), true)
+	if err != nil {
+		return err
+	}
+
 	bar, err := progress.NewModel(currentTheme.BarColor())
 	if err != nil {
 		return err

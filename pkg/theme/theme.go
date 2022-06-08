@@ -34,16 +34,27 @@ func DefaultTheme() *Theme {
 	}
 }
 
-func LoadViper() *Theme {
+func LoadViper(v *viper.Viper, first bool) (*Theme, error) {
 	theme := DefaultTheme()
-	viper.UnmarshalKey("theme", theme)
-	return theme
+	v.UnmarshalKey("theme", theme)
+	if !first || theme.File == "" {
+		return theme, nil
+	}
+
+	v = viper.New()
+	v.SetConfigFile(theme.File)
+	err := v.ReadInConfig()
+	if err != nil {
+		return theme, err
+	}
+	return LoadViper(v, false)
 }
 
 type Theme struct {
-	Text  Text  `json:"text" toml:"text" yaml:"text"`
-	Bar   Bar   `json:"bar" toml:"bar" yaml:"bar"`
-	Graph Graph `json:"graph" toml:"graph" yaml:"graph"`
+	File  string `json:"file" toml:"file" yaml:"file"`
+	Text  Text   `json:"text" toml:"text" yaml:"text"`
+	Bar   Bar    `json:"bar" toml:"bar" yaml:"bar"`
+	Graph Graph  `json:"graph" toml:"graph" yaml:"graph"`
 }
 
 type Text struct {

@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"fmt"
 	"math/rand"
 	"os"
 	"regexp"
@@ -64,5 +65,16 @@ func RemoveNonAlpha(s string) (string, error) {
 	}
 
 	s = reg.ReplaceAllString(s, "")
+	return s, nil
+}
+
+// Remove words of minimum length
+func MinWordLength(s string, l int) (string, error) {
+	reg, err := regexp.Compile(fmt.Sprintf("\\b\\w{1,%d}\\b", l-1))
+	if err != nil {
+		return "", err
+	}
+
+	s = reg.ReplaceAllString(s, " ")
 	return s, nil
 }

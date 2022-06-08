@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/maaslalani/typer/pkg/flags"
@@ -15,6 +14,7 @@ import (
 var (
 	cfgFile            string
 	length             int
+	minWordLength      int
 	filePath           string
 	monkeytypeLanguage string
 )
@@ -40,14 +40,16 @@ var rootCmd = &cobra.Command{
 		}
 
 		flagStruct := flags.Flags{
-			Length:      length,
-			Capital:     c,
-			Punctuation: p,
+			Length:        length,
+			MinWordLength: minWordLength,
+			Capital:       c,
+			Punctuation:   p,
 		}
 
 		stat, err := os.Stdin.Stat()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Print(err)
+			os.Exit(1)
 		}
 
 		switch true {
@@ -65,7 +67,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		if err != nil {
-			log.Println("Error: Could not read words from source:", err)
+			fmt.Println("Error:", err)
 			os.Exit(1)
 		}
 	},
@@ -79,20 +81,23 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.typer.yaml)")
-	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", flags.DefaultLength, "set max text length")
-	rootCmd.PersistentFlags().BoolP("capital", "c", false, "true to include capital letters")
-	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "true to include punctuation")
-	rootCmd.PersistentFlags().BoolP("monkeytype", "m", false, "true to use monkeytype as a source")
 	rootCmd.PersistentFlags().StringVar(&monkeytypeLanguage, "monkeytype-language", "english", "monkeytype language")
 	rootCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "path to input file")
 
+	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", flags.DefaultLength, "set max text length")
+	rootCmd.PersistentFlags().IntVar(&minWordLength, "min-word-length", -1, "set min word length")
+
+	rootCmd.PersistentFlags().BoolP("capital", "c", false, "true to include capital letters")
+	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "true to include punctuation")
+	rootCmd.PersistentFlags().BoolP("monkeytype", "m", false, "true to use monkeytype as a source")
+
 	if length > flags.MaxLength {
-		log.Println("Error: Max length value exceeded. Restoring to max length value.")
+		fmt.Println("Error: Max length value exceeded. Restoring to max length value.")
 		length = flags.MaxLength
 	}
 
 	if length < 0 {
-		log.Println("Error: Length cannot be negative. Using default length.")
+		fmt.Println("Error: Length cannot be negative. Using default length.")
 		length = flags.MaxLength
 	}
 }
