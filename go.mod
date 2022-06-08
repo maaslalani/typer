@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/charmbracelet/bubbles v0.7.7
 	github.com/charmbracelet/bubbletea v0.13.2
+	github.com/guptarohit/asciigraph v0.5.5 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/go-wordwrap v1.0.1
 	github.com/muesli/termenv v0.8.1
