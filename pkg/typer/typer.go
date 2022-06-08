@@ -22,7 +22,6 @@ import (
 )
 
 const (
-	blue         = "#4776E6"
 	words        = 15
 	defaultWidth = 60
 )
