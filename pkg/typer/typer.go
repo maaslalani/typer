@@ -3,7 +3,6 @@ package typer
 import (
 	"bufio"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -81,13 +80,18 @@ func FromMonkeytype(language string, flagStruct *flags.Flags) error {
 		language = "english"
 	}
 
-	resp, err := http.Get(fmt.Sprintf("https://monkeytype.com/languages/%s.json", language))
+	resp, err := http.Get(fmt.Sprintf("https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/languages/%s.json", language))
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("error while fetching language (code %d)", resp.StatusCode)
+	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
+
 	if err != nil {
 		return err
 	}
@@ -95,11 +99,6 @@ func FromMonkeytype(language string, flagStruct *flags.Flags) error {
 	words := struct {
 		Words []string `json:"words"`
 	}{}
-
-	if strings.Contains(string(bodyBytes), "><html") {
-		return errors.New("Invalid response")
-	}
-
 	if err := json.Unmarshal(bodyBytes, &words); err != nil {
 		return err
 	}
