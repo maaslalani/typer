@@ -130,7 +130,7 @@ func run(text string) error {
 
 	program := tea.NewProgram(model.Model{
 		Progress: bar,
-		Text:     wrap.WrapString(text, defaultWidth),
+		Text:     []rune(wrap.WrapString(text, defaultWidth)),
 		Theme:    currentTheme,
 	})
 

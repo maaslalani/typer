@@ -1,7 +1,6 @@
 package utility
 
 import (
-	"fmt"
 	"math/rand"
 	"os"
 	"regexp"
@@ -59,7 +58,7 @@ func AdjustWhitespace(s string) (string, error) {
 
 // RemoveNonAlpha removes all non-alphanumeric characters exept whitespace
 func RemoveNonAlpha(s string) (string, error) {
-	reg, err := regexp.Compile(`[^a-zA-Z0-9\s]+`)
+	reg, err := regexp.Compile(`[^\p{L}\p{N} ]+`)
 	if err != nil {
 		return "", err
 	}
@@ -70,11 +69,11 @@ func RemoveNonAlpha(s string) (string, error) {
 
 // Remove words of minimum length
 func MinWordLength(s string, l int) (string, error) {
-	reg, err := regexp.Compile(fmt.Sprintf("\\b\\w{1,%d}\\b", l-1))
-	if err != nil {
-		return "", err
+	words := strings.Fields(s)
+	for i, word := range words {
+		if len([]rune(word)) < l {
+			words[i] = ""
+		}
 	}
-
-	s = reg.ReplaceAllString(s, " ")
-	return s, nil
+	return strings.Join(words, " "), nil
 }

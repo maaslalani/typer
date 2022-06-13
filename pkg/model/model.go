@@ -27,9 +27,9 @@ type Model struct {
 	Percent  float64
 	Progress *progress.Model
 	// Text is the randomly generated text for the user to type
-	Text string
+	Text []rune
 	// Typed is the text that the user has typed so far
-	Typed string
+	Typed []rune
 	// Start and end are the start and end time of the typing test
 	Start time.Time
 	// Mistakes is the number of characters that were mistyped by the user
@@ -85,7 +85,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// To properly account for line wrapping we need to always insert a new line
 		// Where the next line starts to not break the user interface, even if the user types a random character
 		if next == '\n' {
-			m.Typed += "\n"
+			m.Typed = append(m.Typed, next)
 
 			// Since we need to perform a line break
 			// if the user types a space we should simply ignore it.
@@ -94,7 +94,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
-		m.Typed += msg.String()
+		m.Typed = append(m.Typed, msg.Runes...)
 
 		if char == next {
 			m.Score += 1.
@@ -125,7 +125,7 @@ func (m Model) View() string {
 		if c == rune(m.Text[i]) {
 			typed += m.Theme.StringColor(m.Theme.Text.Typed, string(c)).String()
 		} else {
-			typed += m.Theme.StringColor(m.Theme.Text.Error, string(m.Typed[i])).String()
+			typed += m.Theme.StringColor(m.Theme.Text.Error, string(m.Text[i])).String()
 		}
 	}
 
@@ -133,7 +133,7 @@ func (m Model) View() string {
 		"\n  %s\n\n%s%s",
 		m.Progress.View(m.Percent),
 		typed,
-		m.Theme.StringColor(m.Theme.Text.Untyped, remaining).Faint(),
+		m.Theme.StringColor(m.Theme.Text.Untyped, string(remaining)).Faint(),
 	)
 
 	var wpm float64
