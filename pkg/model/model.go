@@ -130,11 +130,14 @@ func (m Model) View() string {
 	}
 
 	s := fmt.Sprintf(
-		"\n  %s\n\n%s%s",
+		"\n  %s\n\n%s",
 		m.Progress.View(m.Percent),
 		typed,
-		m.Theme.StringColor(m.Theme.Text.Untyped, string(remaining)).Faint(),
 	)
+	if len(remaining) > 0 {
+		s += m.Theme.StringColor(m.Theme.Text.Untyped, string(remaining[:1])).Underline().Faint().String()
+		s += m.Theme.StringColor(m.Theme.Text.Untyped, string(remaining[1:])).Faint().String()
+	}
 
 	var wpm float64
 	// Start counting wpm after at least two characters are typed
