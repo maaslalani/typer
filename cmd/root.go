@@ -39,11 +39,17 @@ var rootCmd = &cobra.Command{
 			fmt.Println("Error: Something went wrong with monkeytype flag", err)
 		}
 
+		q, err := cmd.Flags().GetBool("quote")
+		if err != nil {
+			fmt.Println("Error: Something went wrong with the quote flag", err)
+		}
+
 		flagStruct := flags.Flags{
 			Length:        length,
 			MinWordLength: minWordLength,
 			Capital:       c,
 			Punctuation:   p,
+			Quote:         q,
 		}
 
 		stat, err := os.Stdin.Stat()
@@ -52,16 +58,13 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		switch true {
+		switch {
 		case (stat.Mode() & os.ModeCharDevice) == 0:
 			err = typer.FromStdin(length, &flagStruct)
-			break
 		case m:
 			err = typer.FromMonkeytype(monkeytypeLanguage, &flagStruct)
-			break
 		case filePath != "":
 			err = typer.FromFile(filePath, &flagStruct)
-			break
 		default:
 			err = typer.FromRandom(length, &flagStruct)
 		}
@@ -84,12 +87,13 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&monkeytypeLanguage, "monkeytype-language", "english", "monkeytype language")
 	rootCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "path to input file")
 
-	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", flags.DefaultLength, "set max text length")
+	rootCmd.PersistentFlags().IntVarP(&length, "length", "l", flags.DefaultLength, "set max text length, if -q flag is used, it will be the max quote length")
 	rootCmd.PersistentFlags().IntVar(&minWordLength, "min-word-length", -1, "set min word length")
 
 	rootCmd.PersistentFlags().BoolP("capital", "c", false, "true to include capital letters")
 	rootCmd.PersistentFlags().BoolP("punctuation", "p", false, "true to include punctuation")
 	rootCmd.PersistentFlags().BoolP("monkeytype", "m", false, "true to use monkeytype as a source")
+	rootCmd.PersistentFlags().BoolP("quote", "q", false, "true to use quotes, needs monkeytype flag. it's ignores -p and -c flags")
 
 	if length > flags.MaxLength {
 		fmt.Println("Error: Max length value exceeded. Restoring to max length value.")
