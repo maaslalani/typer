@@ -63,14 +63,15 @@ type Graph struct {
 }
 
 func (t Theme) StringColor(rgbColors RGBColor, input string) termenv.Style {
+	profile := termenv.ColorProfile()
 	output := termenv.String(input)
 
 	if rgbColors.Background != "" {
-		output = output.Background(termenv.RGBColor(rgbColors.Background))
+		output = output.Background(profile.Color(rgbColors.Background))
 	}
 
 	if rgbColors.Foreground != "" {
-		output = output.Foreground(termenv.RGBColor(rgbColors.Foreground))
+		output = output.Foreground(profile.Color(rgbColors.Foreground))
 	}
 
 	return output
