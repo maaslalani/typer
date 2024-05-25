@@ -1,0 +1,305 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "color": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^#([0-9A-F]{3}|[0-9A-F]{6})$",
+            "examples": [
+                "#000000",
+                "#FF0000",
+                "#00FF00",
+                "#0000FF",
+                "#FFFF00",
+                "#FF00FF",
+                "#00FFFF",
+                "#FFFFFF",
+                "#000",
+                "#F00",
+                "#0F0",
+                "#00F",
+                "#FF0",
+                "#F0F",
+                "#0FF",
+                "#FFF"
+            ]
+        },
+        "foreground-property": {
+            "title": "foreground",
+            "description": "A foreground color\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+            "$ref": "#/definitions/color"
+        },
+        "background-property": {
+            "title": "background",
+            "description": "A background color\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+            "$ref": "#/definitions/color"
+        }
+    },
+    "title": "typer settings",
+    "description": "typer settings\nhttps://github.com/maaslalani/typer",
+    "type": "object",
+    "properties": {
+        "theme": {
+            "title": "theme",
+            "description": "Theme settings\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "title": "file",
+                    "description": "An absolute path to theme to override settings below\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "[^ ]",
+                    "examples": [
+                        "/an/absoulute/path/to/the/theme.yaml"
+                    ]
+                },
+                "bar": {
+                    "title": "bar",
+                    "description": "Bar settings\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                    "type": "object",
+                    "properties": {
+                        "color": {
+                            "title": "color",
+                            "description": "A color\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                            "$ref": "#/definitions/color"
+                        },
+                        "gradient": {
+                            "title": "gradient",
+                            "description": "A second gradient color\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                            "$ref": "#/definitions/color"
+                        }
+                    },
+                    "dependencies": {
+                        "gradient": [
+                            "color"
+                        ]
+                    },
+                    "minProperties": 1,
+                    "additionalProperties": false
+                },
+                "graph": {
+                    "title": "graph",
+                    "description": "Graphics settings\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                    "type": "object",
+                    "properties": {
+                        "color": {
+                            "title": "color",
+                            "description": "A color\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                            "type": "string",
+                            "enum": [
+                                "default",
+                                "aliceblue",
+                                "antiquewhite",
+                                "aqua",
+                                "aquamarine",
+                                "azure",
+                                "beige",
+                                "bisque",
+                                "black",
+                                "blanchedalmond",
+                                "blue",
+                                "blueviolet",
+                                "brown",
+                                "burlywood",
+                                "cadetblue",
+                                "chartreuse",
+                                "chocolate",
+                                "coral",
+                                "cornflowerblue",
+                                "cornsilk",
+                                "crimson",
+                                "cyan",
+                                "darkblue",
+                                "darkcyan",
+                                "darkgoldenrod",
+                                "darkgray",
+                                "darkgreen",
+                                "darkkhaki",
+                                "darkmagenta",
+                                "darkolivegreen",
+                                "darkorange",
+                                "darkorchid",
+                                "darkred",
+                                "darksalmon",
+                                "darkseagreen",
+                                "darkslateblue",
+                                "darkslategray",
+                                "darkturquoise",
+                                "darkviolet",
+                                "deeppink",
+                                "deepskyblue",
+                                "dimgray",
+                                "dodgerblue",
+                                "firebrick",
+                                "floralwhite",
+                                "forestgreen",
+                                "fuchsia",
+                                "gainsboro",
+                                "ghostwhite",
+                                "gold",
+                                "goldenrod",
+                                "gray",
+                                "green",
+                                "greenyellow",
+                                "honeydew",
+                                "hotpink",
+                                "indianred",
+                                "indigo",
+                                "ivory",
+                                "khaki",
+                                "lavender",
+                                "lavenderblush",
+                                "lawngreen",
+                                "lemonchiffon",
+                                "lightblue",
+                                "lightcoral",
+                                "lightcyan",
+                                "lightgoldenrodyellow",
+                                "lightgray",
+                                "lightgreen",
+                                "lightpink",
+                                "lightsalmon",
+                                "lightseagreen",
+                                "lightskyblue",
+                                "lightslategray",
+                                "lightsteelblue",
+                                "lightyellow",
+                                "lime",
+                                "limegreen",
+                                "linen",
+                                "magenta",
+                                "maroon",
+                                "mediumaquamarine",
+                                "mediumblue",
+                                "mediumorchid",
+                                "mediumpurple",
+                                "mediumseagreen",
+                                "mediumslateblue",
+                                "mediumspringgreen",
+                                "mediumturquoise",
+                                "mediumvioletred",
+                                "midnightblue",
+                                "mintcream",
+                                "mistyrose",
+                                "moccasin",
+                                "navajowhite",
+                                "navy",
+                                "oldlace",
+                                "olive",
+                                "olivedrab",
+                                "orange",
+                                "orangered",
+                                "orchid",
+                                "palegoldenrod",
+                                "palegreen",
+                                "paleturquoise",
+                                "palevioletred",
+                                "papayawhip",
+                                "peachpuff",
+                                "peru",
+                                "pink",
+                                "plum",
+                                "powderblue",
+                                "purple",
+                                "red",
+                                "rosybrown",
+                                "royalblue",
+                                "saddlebrown",
+                                "salmon",
+                                "sandybrown",
+                                "seagreen",
+                                "seashell",
+                                "sienna",
+                                "silver",
+                                "skyblue",
+                                "slateblue",
+                                "slategray",
+                                "snow",
+                                "springgreen",
+                                "steelblue",
+                                "tan",
+                                "teal",
+                                "thistle",
+                                "tomato",
+                                "turquoise",
+                                "violet",
+                                "wheat",
+                                "white",
+                                "whitesmoke",
+                                "yellow",
+                                "yellowgreen"
+                            ]
+                        },
+                        "height": {
+                            "title": "height",
+                            "description": "A height\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    "minProperties": 1,
+                    "additionalProperties": false
+                },
+                "text": {
+                    "title": "text",
+                    "description": "Text settings\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                    "type": "object",
+                    "properties": {
+                        "error": {
+                            "title": "error",
+                            "description": "Color settings for misspellings\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                            "type": "object",
+                            "properties": {
+                                "foreground": {
+                                    "$ref": "#/definitions/foreground-property"
+                                },
+                                "background": {
+                                    "$ref": "#/definitions/background-property"
+                                }
+                            },
+                            "minProperties": 1,
+                            "additionalProperties": false
+                        },
+                        "typed": {
+                            "title": "error",
+                            "description": "Color settings for typed characters\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                            "type": "object",
+                            "properties": {
+                                "foreground": {
+                                    "$ref": "#/definitions/foreground-property"
+                                },
+                                "background": {
+                                    "$ref": "#/definitions/background-property"
+                                }
+                            },
+                            "minProperties": 1,
+                            "additionalProperties": false
+                        },
+                        "untyped": {
+                            "title": "error",
+                            "description": "Color settings for not typed characters\nhttps://github.com/maaslalani/typer?tab=readme-ov-file#themes",
+                            "type": "object",
+                            "properties": {
+                                "foreground": {
+                                    "$ref": "#/definitions/foreground-property"
+                                },
+                                "background": {
+                                    "$ref": "#/definitions/background-property"
+                                }
+                            },
+                            "minProperties": 1,
+                            "additionalProperties": false
+                        }
+                    },
+                    "minProperties": 1,
+                    "additionalProperties": false
+                }
+            },
+            "minProperties": 1,
+            "additionalProperties": false
+        }
+    },
+    "minProperties": 1,
+    "additionalProperties": false
+}
