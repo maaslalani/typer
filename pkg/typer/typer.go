@@ -39,7 +39,7 @@ func FromStdin(n int, flagStruct *flags.Flags) error {
 	}
 
 	text := string(stdin)
-	text, err := flagStruct.FormatText(text)
+	text, err := flagStruct.FormatWords(text)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func FromStdin(n int, flagStruct *flags.Flags) error {
 func FromRandom(n int, flagStruct *flags.Flags) error {
 	text := util.RandomWords(n)
 
-	text, err := flagStruct.FormatText(text)
+	text, err := flagStruct.FormatWords(text)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func FromFile(path string, flagStruct *flags.Flags) error {
 		return err
 	}
 
-	text, err = flagStruct.FormatText(text)
+	text, err = flagStruct.FormatWords(text)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,12 @@ func FromMonkeytype(language string, flagStruct *flags.Flags) error {
 		language = "english"
 	}
 
-	resp, err := http.Get(fmt.Sprintf("https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/languages/%s.json", language))
+	textType := "languages"
+	if flagStruct.Quote {
+		textType = "quotes"
+	}
+
+	resp, err := http.Get(fmt.Sprintf("https://raw.githubusercontent.com/monkeytypegame/monkeytype/master/frontend/static/%s/%s.json", textType, language))
 	if err != nil {
 		return err
 	}
@@ -95,22 +100,37 @@ func FromMonkeytype(language string, flagStruct *flags.Flags) error {
 		return err
 	}
 
-	words := struct {
-		Words []string `json:"words"`
-	}{}
-	if err := json.Unmarshal(bodyBytes, &words); err != nil {
-		return err
-	}
+	var formatted string
+	if !flagStruct.Quote {
+		words := struct {
+			Words []string `json:"words"`
+		}{}
+		if err := json.Unmarshal(bodyBytes, &words); err != nil {
+			return err
+		}
 
-	seed := rand.NewSource(time.Now().Unix() + int64(len(words.Words)))
-	r := rand.New(seed)
-	r.Shuffle(len(words.Words), func(i, j int) {
-		words.Words[i], words.Words[j] = words.Words[j], words.Words[i]
-	})
+		seed := rand.NewSource(time.Now().Unix() + int64(len(words.Words)))
+		r := rand.New(seed)
+		r.Shuffle(len(words.Words), func(i, j int) {
+			words.Words[i], words.Words[j] = words.Words[j], words.Words[i]
+		})
 
-	formatted, err := flagStruct.FormatText(strings.Join(words.Words, "\n"))
-	if err != nil {
-		return err
+		formatted, err = flagStruct.FormatWords(strings.Join(words.Words, "\n"))
+		if err != nil {
+			return err
+		}
+	} else {
+		quotes := struct {
+			Quotes []flags.Quote `json:"quotes"`
+		}{}
+		if err := json.Unmarshal(bodyBytes, &quotes); err != nil {
+			return err
+		}
+
+		formatted, err = flagStruct.FormatQuote(quotes)
+		if err != nil {
+			return err
+		}
 	}
 
 	return run(formatted)
